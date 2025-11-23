@@ -1,0 +1,286 @@
+/* frontend/src/index.css
+   Complete updated styles for Expense Tracker UI
+*/
+
+/* --------------------------
+   Theme variables
+   -------------------------- */
+   :root{
+    --bg-1: #f7fafc;
+    --bg-2: #ffffff;
+    --surface: #ffffff;
+    --muted: #64748b;
+    --text: #0f172a;
+    --primary: #7c3aed;
+    --accent: #06b6d4;
+    --success: #059669;
+    --danger: #e11d48;
+    --card-shadow: 0 8px 30px rgba(2,6,23,0.06);
+    --radius: 12px;
+    --glass: rgba(255,255,255,0.6);
+    --max-width: 1100px;
+  }
+  
+  /* --------------------------
+     Reset & base
+     -------------------------- */
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale; }
+  html, body, #root { height: 100%; }
+  body {
+    font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    background: linear-gradient(180deg, var(--bg-1) 0%, var(--bg-2) 100%);
+    color: var(--text);
+    -webkit-tap-highlight-color: transparent;
+    line-height: 1.45;
+    font-size: 15px;
+    padding: 20px;
+  }
+  
+  /* --------------------------
+     App container
+     -------------------------- */
+  .app-root {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    align-items: center;
+    padding-bottom: 40px;
+  }
+  
+  .container {
+    width: 100%;
+    max-width: var(--max-width);
+    margin: 12px auto;
+    background: var(--surface);
+    border-radius: var(--radius);
+    box-shadow: var(--card-shadow);
+    padding: 20px;
+    overflow: hidden;
+  }
+  
+  /* smaller card variant */
+  .card {
+    background: var(--surface);
+    border-radius: 10px;
+    padding: 14px;
+    box-shadow: 0 6px 20px rgba(2,6,23,0.04);
+  }
+  
+  /* --------------------------
+     Header / Nav
+     -------------------------- */
+  header.app-header {
+    width: 100%;
+    max-width: var(--max-width);
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  
+  .app-title {
+    font-size: 20px;
+    font-weight: 700;
+    display:flex;
+    gap:10px;
+    align-items:center;
+  }
+  
+  /* small subtitle */
+  .app-sub { color: var(--muted); font-size: 13px; margin-left: 6px; }
+  
+  /* Navbar buttons */
+  .nav-actions { display:flex; gap:8px; align-items:center; }
+  button, .btn {
+    background: var(--primary);
+    color: white;
+    padding: 9px 14px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: transform .06s ease, box-shadow .08s ease, opacity .08s;
+  }
+  button.secondary, .btn.secondary {
+    background: transparent;
+    color: var(--text);
+    border: 1px solid #e6e9ef;
+  }
+  button:active { transform: translateY(1px); }
+  button[disabled] { opacity: 0.6; cursor: not-allowed; }
+  
+  /* --------------------------
+     Forms & inputs
+     -------------------------- */
+  form { display: grid; gap: 12px; }
+  
+  input[type="text"], input[type="password"], input[type="email"], input[type="number"], textarea, select {
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: 1px solid #e6e9ef;
+    font-size: 14px;
+    outline: none;
+    width: 100%;
+    background: white;
+  }
+  
+  textarea { min-height: 70px; resize: vertical; }
+  
+  input:focus, textarea:focus, select:focus {
+    border-color: var(--primary);
+    box-shadow: 0 6px 20px rgba(124,58,237,0.06);
+  }
+  
+  /* form row helpers */
+  .row { display:flex; gap:10px; align-items:center; }
+  .row.col-2 > * { flex: 1; }
+  .row.col-3 > * { flex: 1; }
+  
+  /* small muted text */
+  .small-muted { color: var(--muted); font-size: 13px; }
+  
+  /* label */
+  .form-label { font-size: 13px; margin-bottom:6px; color: #0f172a; }
+  
+  /* --------------------------
+     Dashboard layout
+     -------------------------- */
+  .dashboard-grid {
+    display: grid;
+    grid-template-columns: 1fr 360px;
+    gap: 18px;
+    align-items: start;
+  }
+  
+  /* responsive */
+  @media (max-width: 900px) {
+    .dashboard-grid { grid-template-columns: 1fr; padding: 0 8px; }
+    .container { padding: 14px; border-radius: 10px; }
+  }
+  
+  /* summary header */
+  .summary {
+    display:flex;
+    gap:16px;
+    align-items:center;
+    margin-bottom:12px;
+  }
+  .summary .card {
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+    min-width: 160px;
+    padding: 12px;
+    text-align: left;
+  }
+  
+  /* colored amount */
+  .amount-positive { color: var(--success); font-weight:700; font-size:16px; }
+  .amount-negative { color: var(--danger); font-weight:700; font-size:16px; }
+  
+  /* --------------------------
+     Expense list
+     -------------------------- */
+  .expense-list { list-style: none; margin-top: 8px; display: grid; gap: 10px; padding: 0; }
+  .expense-item {
+    padding: 12px;
+    border-radius: 10px;
+    border: 1px solid #f1f5f9;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: linear-gradient(180deg, rgba(255,255,255,0.6), rgba(255,255,255,0.4));
+  }
+  .expense-item:hover { transform: translateY(-3px); box-shadow: 0 12px 30px rgba(2,6,23,0.06); transition: all .18s ease; }
+  
+  /* left info */
+  .expense-left { display:flex; gap:12px; align-items:center; }
+  .expense-meta { display:flex; flex-direction:column; gap:4px; }
+  .expense-title { font-weight:700; font-size:15px; }
+  .expense-sub { color: var(--muted); font-size:13px; }
+  
+  /* right amount */
+  .expense-amount { text-align:right; min-width:110px; }
+  .expense-amount .value { font-weight:800; font-size:16px; }
+  .expense-amount .currency { font-size:12px; color:var(--muted); }
+  
+  /* small tag chips */
+  .tag-list { display:flex; gap:6px; flex-wrap:wrap; margin-top:6px; }
+  .tag {
+    font-size:12px;
+    padding: 4px 8px;
+    border-radius: 999px;
+    background: #f3f4f6;
+    color: #0f172a;
+    border: 1px solid #eef2ff;
+  }
+  
+  /* --------------------------
+     Expense form (aside)
+     -------------------------- */
+  .aside-form { position: sticky; top: 20px; }
+  .aside .container { padding: 12px; }
+  
+  /* form sections */
+  .form-section { margin-top: 8px; }
+  
+  /* --------------------------
+     Categories list (side)
+     -------------------------- */
+  .categories { display:grid; gap:8px; margin-top:8px; }
+  .category-row { display:flex; justify-content:space-between; padding:10px; border-radius:8px; border:1px solid #f1f5f9; }
+  
+  /* --------------------------
+     Minimal tables and utilities
+     -------------------------- */
+  .table { width:100%; border-collapse: collapse; }
+  .table th, .table td { text-align:left; padding:8px; border-bottom:1px solid #f3f4f6; }
+  .kicker { font-size:12px; color:var(--muted); }
+  
+  /* --------------------------
+     Empty state
+     -------------------------- */
+  .empty-state { padding:24px; text-align:center; color:var(--muted); }
+  
+  /* --------------------------
+     Small helpers
+     -------------------------- */
+  .flex { display:flex; }
+  .stack { display:flex; flex-direction:column; gap:8px; }
+  .center { display:flex; align-items:center; justify-content:center; }
+  .gap-8 { gap:8px; }
+  .mt-8 { margin-top:8px; }
+  .mb-8 { margin-bottom:8px; }
+  
+  /* --------------------------
+     Toast / notification (simple)
+     -------------------------- */
+  .toast {
+    position: fixed;
+    right: 16px;
+    bottom: 24px;
+    background: rgba(15,23,42,0.95);
+    color: white;
+    padding: 10px 14px;
+    border-radius: 10px;
+    box-shadow: 0 8px 30px rgba(2,6,23,0.2);
+    z-index: 9999;
+  }
+  
+  /* --------------------------
+     Accessibility / focus
+     -------------------------- */
+  :focus { outline: 3px solid rgba(124,58,237,0.12); outline-offset: 2px; }
+  
+  /* --------------------------
+     Tiny responsive tweaks
+     -------------------------- */
+  @media (max-width: 520px) {
+    .row { flex-direction: column; }
+    .expense-amount { min-width: 90px; font-size: 14px; }
+    .app-title { font-size: 18px; }
+    .container { padding: 12px; border-radius: 10px; }
+  }
+  

@@ -1,0 +1,29 @@
+# Node modules
+node_modules/
+npm-debug.log
+yarn-debug.log
+yarn-error.log
+
+# Logs
+logs
+*.log
+logs/*
+
+# Environment variables
+.env
+.env.local
+backend/.env
+frontend/.env
+backend/.env.local
+frontend/.env.local
+
+# Build outputs
+dist/
+build/
+
+# Vite
+*.tsbuildinfo
+.DS_Store
+
+# Mac junk
+.DS_Store
