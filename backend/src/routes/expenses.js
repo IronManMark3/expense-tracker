@@ -3,6 +3,7 @@ const router = express.Router();
 const Expense = require('../models/Expense');
 const auth = require('../middleware/auth');
 const Joi = require('joi');
+const mongoose = require('mongoose'); // <-- ADDED: Import mongoose for ObjectId
 
 const expenseSchema = Joi.object({
   title: Joi.string().required(),
@@ -29,7 +30,7 @@ router.post('/', auth, async (req, res) => {
 // Read list with filters: category, type, q (search), page, limit, sort
 router.get('/', auth, async (req, res) => {
   const { category, type, q, page = 1, limit = 50, sort = '-date' } = req.query;
-  const filter = { user: req.user.id };
+  const filter = { user: new mongoose.Types.ObjectId(req.user.id) }; // <-- UPDATED: Use ObjectId
   if (category) filter.category = category;
   if (type) filter.type = type;
   if (q) filter.$or = [
@@ -50,7 +51,7 @@ router.get('/', auth, async (req, res) => {
 // Get per-category list (convenience)
 router.get('/category/:category', auth, async (req, res) => {
   const { category } = req.params;
-  const items = await Expense.find({ user: req.user.id, category }).sort({ date: -1 });
+  const items = await Expense.find({ user: new mongoose.Types.ObjectId(req.user.id), category }).sort({ date: -1 }); // <-- UPDATED: Use ObjectId
   res.json(items);
 });
 
@@ -59,7 +60,7 @@ router.get('/summary', auth, async (req, res) => {
   const userId = req.user.id;
 
   const totals = await Expense.aggregate([
-    { $match: { user: mongoose.Types.ObjectId(userId) } },
+    { $match: { user: new mongoose.Types.ObjectId(userId) } }, // <-- FIXED: Added new and ObjectId wrapper
     {
       $group: {
         _id: { category: '$category', type: '$type' },
@@ -90,7 +91,7 @@ router.put('/:id', auth, async (req, res) => {
   const { id } = req.params;
   const { error, value } = expenseSchema.validate(req.body);
   if (error) return res.status(400).json({ errors: error.details.map(d => d.message) });
-  const updated = await Expense.findOneAndUpdate({ _id: id, user: req.user.id }, value, { new: true });
+  const updated = await Expense.findOneAndUpdate({ _id: id, user: new mongoose.Types.ObjectId(req.user.id) }, value, { new: true }); // <-- UPDATED: Use ObjectId
   if (!updated) return res.status(404).json({ message: 'Not found' });
   res.json(updated);
 });
@@ -98,7 +99,7 @@ router.put('/:id', auth, async (req, res) => {
 // Delete
 router.delete('/:id', auth, async (req, res) => {
   const { id } = req.params;
-  const removed = await Expense.findOneAndDelete({ _id: id, user: req.user.id });
+  const removed = await Expense.findOneAndDelete({ _id: id, user: new mongoose.Types.ObjectId(req.user.id) }); // <-- UPDATED: Use ObjectId
   if (!removed) return res.status(404).json({ message: 'Not found' });
   res.json({ message: 'Deleted' });
 });
