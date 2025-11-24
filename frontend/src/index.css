@@ -177,3 +177,88 @@ section.panel{ min-height:100vh; padding:60px 40px; scroll-snap-align:start; dis
   header.site-header{padding:16px 20px;}
   .txn-amount{font-size:16px!important;}
 }
+/* --- Existing Styles (Keep these) --- */
+/* ... (Your previous CSS content) ... */
+
+/* --- React Datepicker Customization (New/Updated) --- */
+.custom-datepicker {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid #e6e9ef;
+  /* Solid White Background - Fixes Transparency Issue */
+  background: #ffffff !important; 
+  color: #0f172a !important;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  /* Ensure the input text is always visible */
+  opacity: 1 !important; 
+}
+
+.custom-datepicker:focus {
+  border-color: var(--q-blue);
+  box-shadow: 0 6px 20px rgba(124,58,237,0.06);
+}
+
+/* Wrapper fix for form grid layout */
+.date-picker-full-width {
+  width: 100%;
+}
+.date-picker-full-width .react-datepicker-wrapper {
+  width: 100%;
+}
+
+/* High Z-Index for the Popup Menu */
+.react-datepicker-popper {
+  z-index: 9999 !important;
+}
+
+/* Solid Calendar Popup Style */
+.react-datepicker {
+  font-family: Inter, system-ui, sans-serif !important;
+  border: 1px solid #e2e8f0 !important;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2) !important;
+  /* Solid White Background */
+  background-color: #ffffff !important; 
+  color: #0f172a !important;
+}
+
+/* Header (Month/Year) Background */
+.react-datepicker__header {
+  background-color: #f8fafc !important;
+  border-bottom: 1px solid #e2e8f0 !important;
+}
+
+/* Month/Year Dropdowns */
+.react-datepicker__month-select, 
+.react-datepicker__year-select {
+  padding: 4px;
+  margin: 0 5px;
+  border-radius: 4px;
+  border: 1px solid #cbd5e1;
+  background: white;
+  color: #0f172a;
+  cursor: pointer;
+}
+
+/* Day Styles */
+.react-datepicker__day {
+  color: #0f172a !important;
+}
+.react-datepicker__day:hover {
+  background-color: var(--q-blue) !important;
+  color: white !important;
+  border-radius: 50%;
+}
+.react-datepicker__day--selected {
+  background-color: var(--q-blue) !important;
+  color: white !important;
+  font-weight: bold;
+  border-radius: 50%;
+}
+.react-datepicker__day--keyboard-selected {
+  background-color: #bae6fd !important;
+  color: #0f172a !important;
+  border-radius: 50%;
+}

@@ -6,6 +6,11 @@ import ExpenseChart from '../components/ExpenseChart';
 import TransactionList from '../components/TransactionList';
 import BudgetWidget from '../components/BudgetWidget';
 import GoalWidget from '../components/GoalWidget';
+import QuickActionWidget from '../components/QuickActionWidget';
+
+// --- DATE PICKER IMPORTS ---
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 export default function Dashboard() {
   const [expenses, setExpenses] = useState([]);
@@ -13,29 +18,25 @@ export default function Dashboard() {
   const [budget, setBudget] = useState(0);
   const [goals, setGoals] = useState([]);
   
-  // Filters
   const [filterCategory, setFilterCategory] = useState('All');
-  const [dateRange, setDateRange] = useState({ start: '', end: '' });
+  const [dateRange, setDateRange] = useState({ start: null, end: null });
 
-  // Form
   const [form, setForm] = useState({ 
     title: '', amount: '', type: 'debit', category: 'Food', 
-    date: new Date().toISOString().slice(0,10), paymentMethod: '', tags: '', notes: '' 
+    date: new Date(), 
+    paymentMethod: '', tags: '', notes: '' 
   });
 
   const CATS = ['All', 'Food','Travel','Groceries','Friend','Bills','Entertainment','Health','Other'];
 
-  useEffect(() => { 
-    fetchData(); 
-  }, [filterCategory, dateRange]);
+  useEffect(() => { fetchData(); }, [filterCategory, dateRange]);
 
   async function fetchData() {
     try {
-      // Build Query
       let q = `/expenses?limit=200`;
       if(filterCategory !== 'All') q += `&category=${encodeURIComponent(filterCategory)}`;
-      if(dateRange.start) q += `&startDate=${dateRange.start}`;
-      if(dateRange.end) q += `&endDate=${dateRange.end}`;
+      if(dateRange.start) q += `&startDate=${dateRange.start.toISOString().split('T')[0]}`;
+      if(dateRange.end) q += `&endDate=${dateRange.end.toISOString().split('T')[0]}`;
 
       const [expRes, budgetRes, goalsRes] = await Promise.all([
         api.get(q),
@@ -48,7 +49,6 @@ export default function Dashboard() {
       setBudget(budgetRes.data.amount);
       setGoals(goalsRes.data);
       
-      // Calc Summary locally based on filtered list
       let c = 0, d = 0;
       list.forEach(i => i.type === 'credit' ? c += i.amount : d += i.amount);
       setSummary({ totalCredit: c, totalDebit: d, balance: c - d });
@@ -59,9 +59,14 @@ export default function Dashboard() {
   async function addTransaction(e) {
     e.preventDefault();
     try {
-      const payload = { ...form, amount: Number(form.amount), tags: form.tags ? form.tags.split(',') : [] };
+      const payload = { 
+        ...form, 
+        amount: Number(form.amount), 
+        tags: form.tags ? form.tags.split(',') : [],
+        date: form.date.toISOString()
+      };
       await api.post('/expenses', payload);
-      setForm({ ...form, title: '', amount: '' }); // Reset partial
+      setForm({ ...form, title: '', amount: '' }); 
       fetchData();
       document.getElementById('section-transactions').scrollIntoView({behavior:'smooth'});
     } catch (err) { alert('Add failed'); }
@@ -87,20 +92,50 @@ export default function Dashboard() {
     link.click();
   }
 
+  async function handleQuickAction(action) {
+    try {
+      await api.post('/expenses', {
+        title: action.title,
+        amount: action.amount,
+        type: action.type,
+        category: action.category || 'Other',
+        date: new Date().toISOString()
+      });
+      fetchData();
+    } catch (e) { alert('Failed to execute quick action'); }
+  }
+
   return (
     <div className="site">
       <NavBar />
       <main>
-        {/* HERO */}
         <section className="panel" id="section-hero">
           <div className="content-container dashboard-grid-2-col">
             <div className="glass-effect interactive-card hero-left" style={{padding:'40px', display:'flex', flexDirection:'column', gap:'20px'}}>
-              <div style={{display:'flex', justifyContent:'space-between'}}>
+              {/* Z-INDEX FIX: Added position relative and zIndex: 20 to ensure dropdown covers the cards below */}
+              <div style={{display:'flex', justifyContent:'space-between', flexWrap:'wrap', gap:'10px', position: 'relative', zIndex: 20}}>
                 <h2>Operational Overview</h2>
-                {/* Date Filter */}
-                <div style={{display:'flex', gap:'8px'}}>
-                  <input type="date" onChange={e=>setDateRange({...dateRange, start:e.target.value})} style={{padding:'5px'}} />
-                  <input type="date" onChange={e=>setDateRange({...dateRange, end:e.target.value})} style={{padding:'5px'}} />
+                
+                <div style={{display:'flex', gap:'8px', alignItems:'center'}}>
+                  <DatePicker 
+                    selected={dateRange.start} 
+                    onChange={(date) => setDateRange({...dateRange, start: date})} 
+                    placeholderText="Start Date"
+                    className="custom-datepicker"
+                    showMonthDropdown
+                    showYearDropdown
+                    dropdownMode="select"
+                  />
+                  <span className="small-muted">-</span>
+                  <DatePicker 
+                    selected={dateRange.end} 
+                    onChange={(date) => setDateRange({...dateRange, end: date})} 
+                    placeholderText="End Date"
+                    className="custom-datepicker"
+                    showMonthDropdown
+                    showYearDropdown
+                    dropdownMode="select"
+                  />
                 </div>
               </div>
               
@@ -110,19 +145,11 @@ export default function Dashboard() {
 
             <div className="widgets-area" style={{display:'flex', flexDirection:'column', gap:'30px'}}>
               <BudgetWidget budget={budget} onUpdate={val => setBudget(val)} />
-              {/* Quick Add Shortcut Block */}
-              <div className="glass-effect interactive-card" style={{padding:'20px'}}>
-                <h4>Quick Actions</h4>
-                <div style={{display:'flex', gap:'10px', marginTop:'10px'}}>
-                  <button className="btn ghost" onClick={()=>api.post('/expenses', { title:'Food', amount:200, type:'debit', category:'Food'}).then(fetchData)}>+ Lunch (200)</button>
-                  <button className="btn ghost" onClick={()=>api.post('/expenses', { title:'Cab', amount:500, type:'debit', category:'Travel'}).then(fetchData)}>+ Cab (500)</button>
-                </div>
-              </div>
+              <QuickActionWidget onExecute={handleQuickAction} />
             </div>
           </div>
         </section>
 
-        {/* TRANSACTIONS */}
         <section className="panel" id="section-transactions">
           <div className="content-container dashboard-grid-2-col">
             <div className="panel-left">
@@ -151,7 +178,6 @@ export default function Dashboard() {
           </div>
         </section>
 
-        {/* ADD FORM */}
         <section className="panel" id="section-add">
           <div className="content-container" style={{maxWidth:'800px'}}>
             <div className="glass-effect interactive-card" style={{padding:'40px'}}>
@@ -170,9 +196,20 @@ export default function Dashboard() {
                     {CATS.filter(c=>c!=='All').map(c=><option key={c} value={c}>{c}</option>)}
                   </select>
                 </div>
-                <div style={{display:'flex', gap:'20px'}}>
-                  <input value={form.paymentMethod} onChange={e=>setForm({...form, paymentMethod:e.target.value})} placeholder="Payment Method (UPI, Card)" />
-                  <input type="date" value={form.date} onChange={e=>setForm({...form, date:e.target.value})} />
+                <div style={{display:'flex', gap:'20px', alignItems:'center'}}>
+                  <input style={{flex:1}} value={form.paymentMethod} onChange={e=>setForm({...form, paymentMethod:e.target.value})} placeholder="Payment Method (UPI, Card)" />
+                  <div style={{flex:1}}>
+                    <DatePicker 
+                      selected={form.date} 
+                      onChange={(date) => setForm({...form, date: date})} 
+                      dateFormat="yyyy/MM/dd"
+                      className="custom-datepicker"
+                      wrapperClassName="date-picker-full-width"
+                      showMonthDropdown
+                      showYearDropdown
+                      dropdownMode="select"
+                    />
+                  </div>
                 </div>
                 <input value={form.tags} onChange={e=>setForm({...form, tags:e.target.value})} placeholder="Tags (comma separated)" />
                 <button className="btn primary" type="submit" style={{padding:'18px'}}>EXECUTE</button>

@@ -11,6 +11,7 @@ const { connect } = require('./config/db');
 const metaRoutes = require('./routes/meta');
 const budgetRoutes = require('./routes/budgets'); // NEW
 const goalRoutes = require('./routes/goals');
+const quickActionRoutes = require('./routes/quickActions');
 
 const app = express();
 
@@ -69,6 +70,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/expenses', expenseRoutes);
 app.use('/api/budgets', budgetRoutes); // NEW
 app.use('/api/goals', goalRoutes);     // NEW
+app.use('/api/quick-actions', quickActionRoutes);
 
 // 404 handler
 app.use((req, res, next) => {
