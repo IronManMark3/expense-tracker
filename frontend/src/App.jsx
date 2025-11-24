@@ -1,6 +1,6 @@
 import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
-import Login from './pages/login';
+import Login from './pages/Login';
 import OTPVerify from './pages/OTPVerify';
 import Dashboard from './pages/Dashboard';
 import OAuthCallback from './pages/OAuthCallback';
